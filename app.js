@@ -1,6 +1,4 @@
 const config = require('./config'),
-      oxr = require('open-exchange-rates'),
-      fx = require('money'),
       winston = require('winston'),
       fs = require('fs'),
       path = require('path')
