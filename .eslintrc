@@ -1,0 +1,44 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "ecmaFeatures": {
+    "arrowFunctions": true,
+    "binaryLiterals": true,
+    "blockBindings": true,
+    "classes": false,
+    "defaultParams": false,
+    "destructuring": false,
+    "forOf": true,
+    "generators": true,
+    "modules": false,
+    "objectLiteralComputedProperties": true,
+    "objectLiteralDuplicateProperties": false,
+    "objectLiteralShorthandMethods": true,
+    "objectLiteralShorthandProperties": true,
+    "octalLiterals": true,
+    "regexUFlag": true,
+    "regexYFlag": true,
+    "restParams": true,
+    "spread": true,
+    "superInFunctions": false,
+    "templateStrings": true,
+    "unicodeCodePointEscapes": true,
+    "globalReturn": false,
+    "jsx": false,
+    "experimentalObjectRestSpread": false
+  },
+  "rules": {
+    "semi": [2, "never"],
+    "indent": ["error", 2, { "VariableDeclarator": { "var": 2, "let": 2, "const": 3 } }]
+  },
+  "env": {
+    "browser": false,
+    "node": true
+  },
+  "globals": {
+    "require": true,
+    "module": true,
+    "process": true
+  }
+}

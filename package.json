@@ -1,0 +1,20 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "A Discord bot",
+  "main": "app.js",
+  "scripts": {
+	"start": "node app"
+  },
+  "author": "stanz",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.15.2",
+    "discord.js": "^10.0.1",
+    "money": "^0.2.0",
+    "open-exchange-rates": "^0.3.0",
+    "winston": "^2.3.0",
+    "youtube-audio-stream": "^0.0.31",
+    "ytdl-core": "^0.7.21"
+  }
+}
