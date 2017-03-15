@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.15.2",
     "discord.js": "^11.0.0",
+    "moment-timezone": "^0.5.11",
     "money": "^0.2.0",
     "open-exchange-rates": "^0.3.0",
     "winston": "^2.3.0",
