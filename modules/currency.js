@@ -17,9 +17,9 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-const convertFrom = ['GBP', 'EUR', 'USD', 'NOK', 'SEK', 'CAD', 'CNY', 'RMB']
-const convertTo = ['GBP', 'EUR', 'USD', 'NOK']
-const symbolMap = { "€": "EUR", "$": "USD", "£": "GBP", "¥": 'CNY' }
+const convertFrom = ['GBP', 'EUR', 'USD', 'NOK', 'SEK', 'CAD', 'CNY', 'RMB', 'BTC', 'XBT']
+const convertTo = ['GBP', 'EUR', 'USD', 'NOK', 'BTC']
+const symbolMap = { "€": "EUR", "$": "USD", "£": "GBP", "¥": 'CNY', "Ƀ": 'BTC', "฿": 'BTC', "﹩": 'CAD' }
 const re = '(\\b|'+Object.keys(symbolMap).map(s => escapeRegExp(s)).join('|')+')([+-]?[0-9]{1,3}(?:[0-9]*(?:[.,][0-9]{2})?|(?:,[0-9]{3})*(?:\\.[0-9]{2})?|(?:\\.[0-9]{3})*(?:,[0-9]{2})?|(k)))\\s{0,1}('+convertFrom.join('|')+')?\\b';
 const re1 = new RegExp(re, 'gi')
 const re2 = new RegExp(re, 'i')
@@ -41,7 +41,17 @@ bot.on('message', message => {
               if (match == '.') return ','
             })
           }
-          messages.push(fx(figure).from(currency).to(currency).toFixed(2) + ' ' + currency + ' = [' + convertTo.filter(c => c !== currency).map(c => fx(figure).from(currency).to(c).toFixed(2) + ' ' + c).join(' | ') + ']')
+          function convertCurrency(figure,from,to) {
+            if (from == 'XBT') from = 'BTC'
+            if (to == 'XBT') to = 'BTC'
+            let value = fx(figure).from(from).to(to)
+            if (to == 'BTC' && value < 1) {
+              to = 'mBTC'
+              value = value * 1000
+            }
+            return value.toFixed(2) + ' ' + to
+          }
+          messages.push(convertCurrency(figure,currency,currency) + ' = [' + convertTo.filter(c => c !== currency).map(c => convertCurrency(figure,currency,c)).join(' | ') + ']')
         }
       }
     })
