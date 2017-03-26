@@ -7,7 +7,7 @@ function escapeRegExp(str) {
 }
 
 const convertFrom = ['PST','MST','CST','EST','PDT','MDT','CDT','EDT','GMT','UTC','CET','BST','CEST','PT','ET','CT','MT']
-const convertTo = ['Europe/London','Europe/Brussels','America/New_York','America/Phoenix']
+const convertTo = ['Europe/London','Europe/Brussels','America/New_York','America/Edmonton']
 const re = `((\\d{1,2}):?(\\d{2})?\\s?(PM|AM)?)\\s?(${convertFrom.join('|')})`;
 const re1 = new RegExp(re, 'gi')
 const re2 = new RegExp(re, 'i')
