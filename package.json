@@ -13,8 +13,11 @@
     "discord.js": "^11.1.0",
     "moment-timezone": "^0.5.11",
     "money": "^0.2.0",
+    "node-schedule": "^1.2.4",
     "open-exchange-rates": "^0.3.0",
+    "sugar-date": "^2.0.4",
     "winston": "^2.3.0",
+    "wolfram": "^0.3.4",
     "youtube-audio-stream": "^0.0.31",
     "ytdl-core": "^0.7.21"
   },
