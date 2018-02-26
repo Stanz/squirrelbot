@@ -3,7 +3,7 @@ const bot = require('../lib/bot'),
       wolfram = require('wolfram').createClient(config.modules && config.modules.wolfram && config.modules.wolfram.apiKey)
 
 function getValue(node) {
-  var val = node.value
+  var val = node
   if (node.subpods) return getValue(node.subpods[0])
   return val
 }
@@ -17,18 +17,24 @@ bot.on('message', message => {
         console.error(err)
         return
       }
-      let filtered
-      filtered = result.filter(pod => pod.primary)
+      // Find a primary pod
+      let filtered = result.filter(pod => pod.primary)
+      // If no primary pod, get any pod that isn't "Input interpration"
+      if (!filtered.length) filtered = result.filter(pod => pod.title !== 'Input interpretation')
       if (filtered[0]) {
-        message.channel.sendMessage(filtered[0].title + ' - ' + getValue(filtered[0]))
+        const val = getValue(filtered[0])
+        let opts = {}
+        if (!val.value && val.image) opts.embed = {
+			url: val.image,
+			image: {
+				url: val.image
+			}
+		}
+        console.log(opts)
+        message.channel.send(filtered[0].title + (val.value ? (' - ' + val.value) : ''),opts)
         return
       }
-      filtered = result.filter(pod => pod.title !== 'Input interpretation')
-      if (filtered[0]) {
-        message.channel.sendMessage(filtered[0].title + ' - ' + getValue(filtered[0]))
-        return
-      }
-      message.channel.sendMessage('I got nothing')
+      message.channel.send('I got nothing')
     })
   }
 })
