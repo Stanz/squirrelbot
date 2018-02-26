@@ -17,12 +17,18 @@ bot.on('message', message => {
         console.error(err)
         return
       }
-      result = result.filter(pod => pod.primary)
-      if (result[0]) {
-        message.channel.sendMessage(result[0].title + ' - ' + getValue(result[0]))
-      } else {
-        message.channel.sendMessage('Nothing')
+      let filtered
+      filtered = result.filter(pod => pod.primary)
+      if (filtered[0]) {
+        message.channel.sendMessage(filtered[0].title + ' - ' + getValue(filtered[0]))
+        return
       }
+      filtered = result.filter(pod => pod.title !== 'Input interpretation')
+      if (filtered[0]) {
+        message.channel.sendMessage(filtered[0].title + ' - ' + getValue(filtered[0]))
+        return
+      }
+      message.channel.sendMessage('I got nothing')
     })
   }
 })
