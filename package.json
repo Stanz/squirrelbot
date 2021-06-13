@@ -2,9 +2,9 @@
   "name": "discordbot",
   "version": "1.0.0",
   "description": "A Discord bot",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app"
+    "start": "node src/app"
   },
   "author": "stanz",
   "license": "MIT",
