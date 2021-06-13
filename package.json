@@ -9,21 +9,17 @@
   "author": "stanz",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/opus": "^0.5.3",
     "axios": "^0.21.1",
     "discord.js": "^12.5.3",
+    "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "money": "^0.2.0",
     "node-schedule": "^2.0.0",
     "open-exchange-rates": "^0.3.0",
     "sugar-date": "^2.0.6",
     "winston": "^3.3.3",
-    "wolfram": "^0.3.4",
-    "youtube-audio-stream": "^0.3.7",
-    "ytdl-core": "^4.8.2"
-  },
-  "peerDependencies": {
-    "node-opus": "^0.2.0",
-    "opusscript": "^0.0.8"
+    "wolfram-alpha-node": "^0.0.3"
   },
   "devDependencies": {
     "prettier": "2.3.1"

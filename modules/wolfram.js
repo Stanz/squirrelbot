@@ -1,5 +1,6 @@
-const bot = require("../lib/bot"),
-  wolfram = require("wolfram").createClient(process.env.WOLFRAM_API_KEY);
+const bot = require("../lib/bot");
+const WolframAlphaAPI = require("wolfram-alpha-node");
+const wolfram = WolframAlphaAPI(process.env.WOLFRAM_API_KEY);
 
 function getValue(node) {
   var val = node;
@@ -7,38 +8,35 @@ function getValue(node) {
   return val;
 }
 
-bot.on("message", (message) => {
+bot.on("message", async (message) => {
   if (bot.user === message.author) return;
   const matches = message.content.match(/^w (.*)$/);
   if (matches && matches.length) {
-    wolfram.query(matches[1], function (err, result) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      // Find a primary pod
-      let filtered = result.filter((pod) => pod.primary);
-      // If no primary pod, get any pod that isn't "Input interpration"
-      if (!filtered.length)
-        filtered = result.filter((pod) => pod.title !== "Input interpretation");
-      if (filtered[0]) {
-        const val = getValue(filtered[0]);
-        let opts = {};
-        if (!val.value && val.image)
-          opts.embed = {
-            url: val.image,
-            image: {
-              url: val.image,
-            },
-          };
-        console.log(opts);
-        message.channel.send(
-          filtered[0].title + (val.value ? " - " + val.value : ""),
-          opts
-        );
-        return;
-      }
-      message.channel.send("I got nothing");
-    });
+    const result = await wolfram.getFull(matches[1]);
+    // Find a primary pod
+    let filtered = result.pods.filter((pod) => pod.primary);
+    // If no primary pod, get any pod that isn't "Input interpration"
+    if (!filtered.length)
+      filtered = result.pods.filter(
+        (pod) => pod.title !== "Input interpretation"
+      );
+    if (filtered[0]) {
+      const val = getValue(filtered[0]);
+      let opts = {};
+      if (!val.plaintext && val.img)
+        opts.embed = {
+          url: val.img.src,
+          image: {
+            url: val.img.src,
+          },
+        };
+      console.log(opts);
+      message.channel.send(
+        filtered[0].title + (val.plaintext ? " - " + val.plaintext : ""),
+        opts
+      );
+      return;
+    }
+    message.channel.send("I got nothing");
   }
 });
