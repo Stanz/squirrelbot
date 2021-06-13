@@ -30,7 +30,11 @@
   },
   "rules": {
     "semi": [2, "never"],
-    "indent": ["error", 2, { "VariableDeclarator": { "var": 2, "let": 2, "const": 3 } }]
+    "indent": [
+      "error",
+      2,
+      { "VariableDeclarator": { "var": 2, "let": 2, "const": 3 } }
+    ]
   },
   "env": {
     "browser": false,

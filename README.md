@@ -1,17 +1,8 @@
-Requires a config.js file in root with for example:
+# Configuration
 
-```javascript
-module.exports = {
-  "discord": {
-    "token": ""
-  },
-  "modules": {
-    "hearthstone": {
-      "apiKey": ""
-    },
-    "open-exchange-rates": {
-      "appId": ""
-    }
-  }
-}
-```
+## Environment Variables
+
+`DISCORD_TOKEN`
+`HEARTHSTONE_API_KEY`
+`OPEN_EXCHANGE_RATES_API_KEY`
+`WOLFRAM_API_KEY`
