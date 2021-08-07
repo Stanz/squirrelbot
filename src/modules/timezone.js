@@ -1,9 +1,8 @@
-const bot = require("../lib/bot"),
-  moment = require("moment-timezone");
-
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
+const bot = require("../lib/bot");
+const moment = require("moment-timezone");
+const nlp = require("compromise");
+nlp.extend(require("compromise-dates"));
+nlp.extend(require("compromise-numbers"));
 
 const convertFrom = [
   "PST",
@@ -24,15 +23,8 @@ const convertFrom = [
   "CT",
   "MT",
 ];
-const convertTo = [
-  "Europe/London",
-  "Europe/Brussels",
-  "America/New_York",
-  "America/Edmonton",
-];
 const re = `((\\d{1,2}):?(\\d{2})?\\s?(PM|AM)?)\\s?(${convertFrom.join("|")})`;
 const re1 = new RegExp(re, "gi");
-const re2 = new RegExp(re, "i");
 
 let countdowns = {};
 
@@ -41,103 +33,40 @@ bot.on("message", (message) => {
   let matches = message.content.match(re1);
   if (matches && matches.length) {
     let messages = [];
-    matches.forEach(function (match) {
-      const m = match.match(re2);
-      if (m) {
-        const now = moment.tz(m[5]);
-        let time;
-        if (m[1]) {
-          let tz;
-          switch (m[5].toLowerCase()) {
-            case "pt":
-              tz = "US/Pacific";
-              break;
-            case "et":
-              tz = "US/Eastern";
-              break;
-            case "ct":
-              tz = "US/Central";
-              break;
-            case "mt":
-              tz = "US/Mountain";
-              break;
-            case "pst":
-              tz = "Etc/GMT+8";
-              break;
-            case "pdt":
-              tz = "Etc/GMT+7";
-              break;
-            case "est":
-              tz = "Etc/GMT+5";
-              break;
-            case "edt":
-              tz = "Etc/GMT+4";
-              break;
-            case "mst":
-              tz = "Etc/GMT+7";
-              break;
-            case "mdt":
-              tz = "Etc/GMT+6";
-              break;
-            case "cst":
-              tz = "Etc/GMT+6";
-              break;
-            case "cdt":
-              tz = "Etc/GMT+5";
-              break;
-            case "cest":
-              tz = "Etc/GMT-2";
-              break;
-            case "cet":
-              tz = "Etc/GMT-1";
-              break;
-            case "gmt":
-              tz = "Etc/GMT";
-              break;
-            case "bst":
-              tz = "Etc/GMT-1";
-              break;
-            case "utc":
-              tz = "Etc/UTC";
-              break;
-          }
-          if (!tz) {
-            messages.push("Invalid timezone");
-            return;
-          }
-          let obj = {
-            year: now.year(),
-            month: now.month(),
-            date: now.date(),
-            hour:
-              m[4] && m[4].toLowerCase() == "pm" ? parseInt(m[2]) + 12 : m[2],
-          };
-          //console.log(obj)
-          //console.log(tz)
-          if (m[3]) obj.minutes = m[3];
-          time = moment.tz(obj, tz);
-        } else {
-          return;
+    let doc = nlp(message.content);
+    let dates = doc.dates().json();
+    dates.forEach(function (date) {
+      let acronyms = doc.acronyms().json();
+      let tz;
+      if (acronyms.length) {
+        switch (acronyms[0].text.toLowerCase()) {
+          case "pt":
+            tz = "US/Pacific";
+            break;
+          case "et":
+            tz = "US/Eastern";
+            break;
+          case "ct":
+            tz = "US/Central";
+            break;
+          case "mt":
+            tz = "US/Mountain";
+            break;
         }
-        if (time < now) time = time.add(1, "days");
+      }
+      time = tz
+        ? moment.tz(moment(date.start).format("YYYY-MM-DDTHH:mm:ss"), tz)
+        : moment(date.start);
+      if (time < moment()) {
+        messages.push(`${time.toNow(true)} ago <t:${time.format("X")}:F>`);
+      } else {
         messages.push(
-          time.fromNow(true) +
-            " from now " +
-            convertTo
-              .map(
-                (tz) =>
-                  "[" +
-                  time.tz(tz).format("HH:mm") +
-                  " " +
-                  tz.split("/")[1] +
-                  "]"
-              )
-              .join(" ")
+          `${time.fromNow(true)} from now <t:${time.format("X")}:F>`
         );
       }
     });
     if (messages.length) {
-      message.channel.sendMessage(messages.join("\n"));
+      message.channel.send(messages.join("\n"));
     }
   }
   m = message.content.match(/^!countdown (.*)$/);
@@ -166,13 +95,13 @@ bot.on("message", (message) => {
       countdowns[channelId] = date.fromNow();
       message.channel.setTopic(countdowns[channelId]);
       updateDate();
-      message.channel.sendMessage("countdown started");
+      message.channel.send("countdown started");
     }
   }
   m = message.content.match(/^!stopcountdown$/);
   if (m && m.length) {
     const channelId = message.channel.id;
     countdowns[channelId] = null;
-    message.channel.sendMessage("countdown stopped");
+    message.channel.send("countdown stopped");
   }
 });
