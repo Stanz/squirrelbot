@@ -10,6 +10,6 @@ RUN bun install && bun run build
 
 FROM astefanutti/scratch-node as run
 
-COPY --from=builder /dist /
+COPY --from=builder /dist /node_modules /
 
 ENTRYPOINT ["node", "app.mjs"]
