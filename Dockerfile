@@ -12,4 +12,4 @@ FROM astefanutti/scratch-node as run
 
 COPY --from=builder /dist /
 
-ENTRYPOINT ["node", "app.js"]
+ENTRYPOINT ["node", "app.mjs"]
