@@ -1,19 +1,21 @@
-const bot = require("../lib/bot"),
-  oxr = require("open-exchange-rates"),
-  fx = require("money");
+import bot from "../lib/bot.mjs";
+import logger from "../lib/logger.mjs";
+import OpenExchangeRates from "oxr";
+import fx from "money";
 
-oxr.set({ app_id: process.env.OPEN_EXCHANGE_RATES_APP_ID });
+const oxr = OpenExchangeRates.factory({
+  appId: process.env.OPEN_EXCHANGE_RATES_APP_ID,
+});
 
-setInterval(
-  (function getRates() {
-    oxr.latest(function () {
-      fx.rates = oxr.rates;
-      fx.base = oxr.base;
-    });
-    return getRates;
-  })(),
-  60 * 60 * 1000
-);
+const getRates = async function getRates() {
+  const result = await oxr.latest();
+  logger.info("Refreshed exchange rates");
+  fx.rates = result.rates;
+  fx.base = result.base;
+};
+
+setInterval(getRates, 60 * 60 * 1000);
+getRates();
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -52,7 +54,7 @@ const re =
 const re1 = new RegExp(re, "gi");
 const re2 = new RegExp(re, "i");
 
-bot.on("message", (message) => {
+bot.on("messageCreate", (message) => {
   if (bot.user === message.author) return;
   let matches = message.content.match(re1);
   if (matches && matches.length) {
@@ -63,12 +65,12 @@ bot.on("message", (message) => {
         const currency =
           (m[4] && m[4].toUpperCase()) || (m[1] && symbolMap[m[1]]);
         if (currency) {
-          let figure = m[3] ? m[2].match(/(.*)[k|K]/)[1] * 1000 : m[2];
+          let figure = m[3] ? +m[2].match(/(.*)[k|K]/)[1] * 1000 : m[2];
           if (
-            /\d{1,3},\d{2}$/.test(figure) ||
-            /\b\d{1,3}\.\d{3}\b/.test(figure)
+            /\d{1,3},\d{2}$/.test(`${figure}`) ||
+            /\b\d{1,3}\.\d{3}\b/.test(`${figure}`)
           ) {
-            figure = figure.replace(/(\.|,)/g, function (match) {
+            figure = `${figure}`.replace(/(\.|,)/g, function (match) {
               if (match == ",") return ".";
               if (match == ".") return ",";
             });
@@ -96,7 +98,7 @@ bot.on("message", (message) => {
       }
     });
     if (messages.length) {
-      message.channel.sendMessage(messages.join("\n"));
+      message.channel.send(messages.join("\n"));
     }
   }
 });
