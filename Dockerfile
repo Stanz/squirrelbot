@@ -1,19 +1,15 @@
-FROM node as installer
+FROM jarredsumner/bun:edge as builder
 
-WORKDIR /app
+WORKDIR /
 
-RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+COPY package.json bun.lockb tsconfig.json ./
 
-FROM installer as builder
+COPY src src
 
-WORKDIR /app
-
-COPY package.json pnpm-lock.yaml src/ ./
-
-RUN pnpm install --prod
+RUN bun install && bun run build
 
 FROM astefanutti/scratch-node as run
 
-COPY --from=builder /app /
+COPY --from=builder /dist /
 
 ENTRYPOINT ["node", "app.js"]
