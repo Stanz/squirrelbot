@@ -1,5 +1,6 @@
-const bot = require("../lib/bot");
-const WolframAlphaAPI = require("wolfram-alpha-node");
+import bot from "../lib/bot.mjs";
+import WolframAlphaAPI from "wolfram-alpha-node";
+
 const wolfram = WolframAlphaAPI(process.env.WOLFRAM_API_KEY);
 
 function getValue(node) {
