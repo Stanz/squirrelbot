@@ -2,4 +2,3 @@ node_modules/
 typings/
 *.log
 .env
-dist/
